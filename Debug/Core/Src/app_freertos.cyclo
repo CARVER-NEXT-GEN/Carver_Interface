@@ -1,0 +1,6 @@
+../Core/Src/app_freertos.c:126:6:MX_FREERTOS_Init	1
+../Core/Src/app_freertos.c:168:6:StartDefaultTask	2
+../Core/Src/app_freertos.c:253:6:timer_callback	4
+../Core/Src/app_freertos.c:289:6:xlr8_publish	2
+../Core/Src/app_freertos.c:296:6:emergency_publish	2
+../Core/Src/app_freertos.c:303:10:calculate_average	2

@@ -78,11 +78,26 @@ std_msgs__msg__Bool emer_msg;
 
 uint8_t sync_counter = 0;
 
-uint8_t pinState = 0;
-uint8_t pinState1 = 0;
-uint8_t pinState2 = 0;
-uint8_t pinState3 = 0;
-uint8_t pinState4 = 0;
+uint8_t mode1 = 0;
+uint8_t mode2 = 0;
+uint8_t mode3 = 0;
+uint8_t mode4 = 0;
+uint8_t forward = 0;
+uint8_t backward = 0;
+uint8_t l_switch = 0;
+uint8_t r_switch = 0;
+uint8_t l_break = 0;
+uint8_t r_break = 0;
+
+uint8_t cmd_mode1 = 0;
+uint8_t cmd_mode2 = 0;
+uint8_t cmd_mode3 = 0;
+uint8_t cmd_mode4 = 0;
+uint8_t cmd_forward = 0;
+uint8_t cmd_backward = 0;
+
+float accelerator = 0.0;
+GPIO_PinState emer = 0;
 
 uint16_t adc_buffer[BUFFER_SIZE];
 /* USER CODE END Variables */
@@ -226,11 +241,11 @@ void StartDefaultTask(void *argument)
 	rclc_timer_init_default(&XLR8_timer, &support, timer_period, timer_callback);
 
 	// create node
-	rclc_node_init_default(&node, "uros_H7_Node", "", &support);
+	rclc_node_init_default(&node, "uros_carver_interface_node", "", &support);
 
 	// create publisher
 	rclc_publisher_init_best_effort(&xrl8_publisher, &node, uint16_type_support, "accl_publisher");
-	rclc_publisher_init_best_effort(&emer_publisher, &node, bool_type_support, "H7_Emergency");
+	rclc_publisher_init_best_effort(&emer_publisher, &node, bool_type_support, "carver_emergency");
 	// create subscriber
 
 	// create service server
@@ -264,15 +279,29 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 			sync_counter = 0;
 		}
 
-		xlr8_publish(calculate_average(adc_buffer, BUFFER_SIZE));
-		emergency_publish(HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin));
+		accelerator = calculate_average(adc_buffer, BUFFER_SIZE);
+		xlr8_publish(accelerator);
+		emer = HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin);
+		emergency_publish(emer);
 
-		pinState  = HAL_GPIO_ReadPin(Mode1_GPIO_Port, Mode1_Pin);
-		pinState1 = HAL_GPIO_ReadPin(Mode2_GPIO_Port, Mode2_Pin);
-		pinState2 = HAL_GPIO_ReadPin(Mode3_GPIO_Port, Mode3_Pin);
-		pinState3 = HAL_GPIO_ReadPin(Mode4_GPIO_Port, Mode4_Pin);
+		mode1 = HAL_GPIO_ReadPin(Mode1_GPIO_Port, Mode1_Pin);
+		mode2 = HAL_GPIO_ReadPin(Mode2_GPIO_Port, Mode2_Pin);
+		mode3 = HAL_GPIO_ReadPin(Mode3_GPIO_Port, Mode3_Pin);
+		mode4 = HAL_GPIO_ReadPin(Mode4_GPIO_Port, Mode4_Pin);
+		forward = HAL_GPIO_ReadPin(Forward_GPIO_Port, Forward_Pin);
+		backward = HAL_GPIO_ReadPin(Backward_GPIO_Port, Backward_Pin);
+		l_switch = HAL_GPIO_ReadPin(L_Switch_GPIO_Port, L_Switch_Pin);
+		r_switch = HAL_GPIO_ReadPin(R_Switch_GPIO_Port, R_Switch_Pin);
+		l_break = HAL_GPIO_ReadPin(L_Break_GPIO_Port, L_Break_Pin);
+		r_break = HAL_GPIO_ReadPin(R_Break_GPIO_Port, R_Break_Pin);
 
-		HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, SET);
+
+		HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, cmd_mode1);
+		HAL_GPIO_WritePin(Lamp_Mode2_GPIO_Port, Lamp_Mode2_Pin, cmd_mode2);
+		HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, cmd_mode3);
+		HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
+		HAL_GPIO_WritePin(Lamp_Forward_GPIO_Port, Lamp_Forward_Pin, cmd_forward);
+		HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, cmd_backward);
 
 		HAL_IWDG_Refresh(&hiwdg);
 	}

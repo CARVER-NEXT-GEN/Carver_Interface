@@ -23,6 +23,7 @@
 #include "dma.h"
 #include "iwdg.h"
 #include "usart.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -48,7 +49,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+//uint8_t pinState = 0;
+//uint8_t pinState1 = 0;
+//uint8_t pinState2 = 0;
+//uint8_t pinState3 = 0;
+//uint8_t pinState4 = 0;
+uint8_t test = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -96,8 +102,10 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_ADC1_Init();
   MX_IWDG_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -170,7 +178,15 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim == &htim2){
+		test +=1;
+//		pinState  = HAL_GPIO_ReadPin(Mode1_GPIO_Port, Mode1_Pin);
+//		pinState1 = HAL_GPIO_ReadPin(Mode2_GPIO_Port, Mode2_Pin);
+//		pinState2 = HAL_GPIO_ReadPin(Mode3_GPIO_Port, Mode3_Pin);
+//		pinState3 = HAL_GPIO_ReadPin(Mode4_GPIO_Port, Mode4_Pin);
+	}
+}
 /* USER CODE END 4 */
 
 /**

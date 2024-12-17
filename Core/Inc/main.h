@@ -66,18 +66,32 @@ void Error_Handler(void);
 #define RCC_OSC_OUT_GPIO_Port GPIOF
 #define Vout_Poten_Pin GPIO_PIN_0
 #define Vout_Poten_GPIO_Port GPIOA
+#define L_Switch_Pin GPIO_PIN_1
+#define L_Switch_GPIO_Port GPIOA
 #define LPUART1_TX_Pin GPIO_PIN_2
 #define LPUART1_TX_GPIO_Port GPIOA
 #define LPUART1_RX_Pin GPIO_PIN_3
 #define LPUART1_RX_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
-#define Mode4_Pin GPIO_PIN_7
-#define Mode4_GPIO_Port GPIOA
+#define R_Switch_Pin GPIO_PIN_4
+#define R_Switch_GPIO_Port GPIOA
+#define Backward_Pin GPIO_PIN_5
+#define Backward_GPIO_Port GPIOA
+#define Forward_Pin GPIO_PIN_6
+#define Forward_GPIO_Port GPIOA
+#define Mode3_Pin GPIO_PIN_7
+#define Mode3_GPIO_Port GPIOA
 #define Emergency_Pin GPIO_PIN_5
 #define Emergency_GPIO_Port GPIOC
+#define Lamp_Forward_Pin GPIO_PIN_10
+#define Lamp_Forward_GPIO_Port GPIOB
+#define L_Break_Pin GPIO_PIN_6
+#define L_Break_GPIO_Port GPIOC
 #define Mode2_Pin GPIO_PIN_7
 #define Mode2_GPIO_Port GPIOC
+#define R_Break_Pin GPIO_PIN_8
+#define R_Break_GPIO_Port GPIOC
+#define Lamp_Backward_Pin GPIO_PIN_8
+#define Lamp_Backward_GPIO_Port GPIOA
 #define Mode1_Pin GPIO_PIN_9
 #define Mode1_GPIO_Port GPIOA
 #define Lamp_Mode1_Pin GPIO_PIN_10
@@ -86,14 +100,14 @@ void Error_Handler(void);
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
 #define T_SWCLK_GPIO_Port GPIOA
-#define Lamp_Mode4_Pin GPIO_PIN_11
-#define Lamp_Mode4_GPIO_Port GPIOC
 #define Lamp_Mode2_Pin GPIO_PIN_3
 #define Lamp_Mode2_GPIO_Port GPIOB
-#define Lamp_Mode3_Pin GPIO_PIN_5
+#define Lamp_Mode3_Pin GPIO_PIN_4
 #define Lamp_Mode3_GPIO_Port GPIOB
-#define Mode3_Pin GPIO_PIN_6
-#define Mode3_GPIO_Port GPIOB
+#define Lamp_Mode4_Pin GPIO_PIN_5
+#define Lamp_Mode4_GPIO_Port GPIOB
+#define Mode4_Pin GPIO_PIN_6
+#define Mode4_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

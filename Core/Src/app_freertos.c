@@ -76,10 +76,14 @@ std_msgs__msg__UInt16 XRL8_msg;
 rcl_publisher_t emer_publisher;
 std_msgs__msg__Bool emer_msg;
 
-uint16_t sync_counter = 0;
-int l = 1000;
+uint8_t sync_counter = 0;
 
-uint16_t pinState = 0;
+uint8_t pinState = 0;
+uint8_t pinState1 = 0;
+uint8_t pinState2 = 0;
+uint8_t pinState3 = 0;
+uint8_t pinState4 = 0;
+
 uint16_t adc_buffer[BUFFER_SIZE];
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -255,32 +259,21 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 	if (timer != NULL) {
 
 
-		if (uwTick >= l) {  // Sync session at lower frequency
+		if (sync_counter++ >= 254) {  // Sync session at lower frequency
 			rmw_uros_sync_session(1000);
-			l += 1000;
+			sync_counter = 0;
 		}
 
 		xlr8_publish(calculate_average(adc_buffer, BUFFER_SIZE));
 		emergency_publish(HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin));
 
-		pinState = HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_2);
-		if (pinState == 1){
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Lamp_Mode2_GPIO_Port, Lamp_Mode2_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, GPIO_PIN_SET);
-				HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, GPIO_PIN_SET);
-		}
-		else{
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_6, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, GPIO_PIN_RESET);
-		}
+		pinState  = HAL_GPIO_ReadPin(Mode1_GPIO_Port, Mode1_Pin);
+		pinState1 = HAL_GPIO_ReadPin(Mode2_GPIO_Port, Mode2_Pin);
+		pinState2 = HAL_GPIO_ReadPin(Mode3_GPIO_Port, Mode3_Pin);
+		pinState3 = HAL_GPIO_ReadPin(Mode4_GPIO_Port, Mode4_Pin);
+
+		HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, SET);
+
 		HAL_IWDG_Refresh(&hiwdg);
 	}
 

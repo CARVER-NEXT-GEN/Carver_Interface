@@ -38,23 +38,23 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := G474RE-Carver-Interface
+BUILD_ARTIFACT_NAME := Carver-Interface
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-G474RE-Carver-Interface.elf \
+Carver-Interface.elf \
 
 MAP_FILES += \
-G474RE-Carver-Interface.map \
+Carver-Interface.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-G474RE-Carver-Interface.list \
+Carver-Interface.list \
 
 
 # All Target
@@ -62,11 +62,11 @@ all:
 	+@$(MAKE) --no-print-directory pre-build && $(MAKE) --no-print-directory main-build
 
 # Main-build Target
-main-build: G474RE-Carver-Interface.elf secondary-outputs
+main-build: Carver-Interface.elf secondary-outputs
 
 # Tool invocations
-G474RE-Carver-Interface.elf G474RE-Carver-Interface.map: $(OBJS) $(USER_OBJS) /home/tim/Temp_ws/G474RE-Carver-Interface/STM32G474RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "G474RE-Carver-Interface.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/tim/Temp_ws/G474RE-Carver-Interface/STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="G474RE-Carver-Interface.map" -Wl,--gc-sections -static -L../micro_ros_stm32cubemx_utils/microros_static_library_ide/libmicroros --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Carver-Interface.elf Carver-Interface.map: $(OBJS) $(USER_OBJS) /home/tim/Documents/GitHub/Carver_Interface/STM32G474RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Carver-Interface.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/tim/Documents/GitHub/Carver_Interface/STM32G474RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Carver-Interface.map" -Wl,--gc-sections -static -L../micro_ros_stm32cubemx_utils/microros_static_library_ide/libmicroros --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -75,18 +75,18 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-G474RE-Carver-Interface.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "G474RE-Carver-Interface.list"
+Carver-Interface.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Carver-Interface.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) G474RE-Carver-Interface.elf G474RE-Carver-Interface.list G474RE-Carver-Interface.map default.size.stdout
+	-$(RM) Carver-Interface.elf Carver-Interface.list Carver-Interface.map default.size.stdout
 	-@echo ' '
 
 pre-build:
-	echo "tim" | sudo -S docker pull microros/micro_ros_static_library_builder:humble && echo "Kireiji_02" | sudo -S docker run --rm -v /home/tim/Temp_ws/G474RE-Carver-Interface:/project --env MICROROS_LIBRARY_FOLDER=micro_ros_stm32cubemx_utils/microros_static_library_ide microros/micro_ros_static_library_builder:humble
+	echo "tim" | sudo -S docker pull microros/micro_ros_static_library_builder:humble && echo "Kireiji_02" | sudo -S docker run --rm -v /home/tim/Documents/GitHub/Carver_Interface:/project --env MICROROS_LIBRARY_FOLDER=micro_ros_stm32cubemx_utils/microros_static_library_ide microros/micro_ros_static_library_builder:humble
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

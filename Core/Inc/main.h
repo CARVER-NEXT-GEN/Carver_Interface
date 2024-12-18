@@ -78,22 +78,22 @@ void Error_Handler(void);
 #define Backward_GPIO_Port GPIOA
 #define Forward_Pin GPIO_PIN_6
 #define Forward_GPIO_Port GPIOA
-#define Mode3_Pin GPIO_PIN_7
-#define Mode3_GPIO_Port GPIOA
+#define Auto_Pin GPIO_PIN_7
+#define Auto_GPIO_Port GPIOA
 #define Emergency_Pin GPIO_PIN_5
 #define Emergency_GPIO_Port GPIOC
 #define Lamp_Forward_Pin GPIO_PIN_10
 #define Lamp_Forward_GPIO_Port GPIOB
 #define L_Break_Pin GPIO_PIN_6
 #define L_Break_GPIO_Port GPIOC
-#define Mode2_Pin GPIO_PIN_7
-#define Mode2_GPIO_Port GPIOC
+#define Teleop_Pin GPIO_PIN_7
+#define Teleop_GPIO_Port GPIOC
 #define R_Break_Pin GPIO_PIN_8
 #define R_Break_GPIO_Port GPIOC
 #define Lamp_Backward_Pin GPIO_PIN_8
 #define Lamp_Backward_GPIO_Port GPIOA
-#define Mode1_Pin GPIO_PIN_9
-#define Mode1_GPIO_Port GPIOA
+#define Manual_Pin GPIO_PIN_9
+#define Manual_GPIO_Port GPIOA
 #define Lamp_Mode1_Pin GPIO_PIN_10
 #define Lamp_Mode1_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
@@ -106,8 +106,8 @@ void Error_Handler(void);
 #define Lamp_Mode3_GPIO_Port GPIOB
 #define Lamp_Mode4_Pin GPIO_PIN_5
 #define Lamp_Mode4_GPIO_Port GPIOB
-#define Mode4_Pin GPIO_PIN_6
-#define Mode4_GPIO_Port GPIOB
+#define Joystick_Pin GPIO_PIN_6
+#define Joystick_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

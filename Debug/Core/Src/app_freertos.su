@@ -1,6 +1,10 @@
-../Core/Src/app_freertos.c:145:6:MX_FREERTOS_Init	8	static
-../Core/Src/app_freertos.c:187:6:StartDefaultTask	456	static
-../Core/Src/app_freertos.c:272:6:timer_callback	24	static
-../Core/Src/app_freertos.c:311:6:xlr8_publish	24	static
-../Core/Src/app_freertos.c:318:6:emergency_publish	24	static
-../Core/Src/app_freertos.c:325:10:calculate_average	24	static
+../Core/Src/app_freertos.c:167:6:MX_FREERTOS_Init	8	static
+../Core/Src/app_freertos.c:209:6:StartDefaultTask	464	static
+../Core/Src/app_freertos.c:299:6:timer_callback	24	static
+../Core/Src/app_freertos.c:348:6:xlr8_publish	24	static
+../Core/Src/app_freertos.c:355:6:emergency_publish	24	static
+../Core/Src/app_freertos.c:362:6:accel_direction_publish	16	static
+../Core/Src/app_freertos.c:368:10:calculate_average	24	static
+../Core/Src/app_freertos.c:376:6:interfaces_status	8	static
+../Core/Src/app_freertos.c:399:6:mode_cycle	4	static
+../Core/Src/app_freertos.c:422:6:mode_light_indicator	8	static

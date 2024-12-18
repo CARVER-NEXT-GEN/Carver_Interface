@@ -46,13 +46,25 @@
 #include <std_msgs/msg/float64_multi_array.h>
 
 #include <std_msgs/msg/u_int16.h>
+#include <std_msgs/msg/int8.h>
 #include <std_msgs/msg/bool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
 /* USER CODE BEGIN PTD */
+typedef enum{
+	MANUAL,
+	TELEOP,
+	AUTO,
+	JOYSTICK,
+	DEBOUNCE
+}MODE;
 
+typedef enum{
+	FORWARD,
+	BACKWARD,
+}DIRECTION;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -76,12 +88,15 @@ std_msgs__msg__UInt16 XRL8_msg;
 rcl_publisher_t emer_publisher;
 std_msgs__msg__Bool emer_msg;
 
+rcl_publisher_t direction_publisher;
+std_msgs__msg__Int8 dir_msg;
+
 uint8_t sync_counter = 0;
 
-uint8_t mode1 = 0;
-uint8_t mode2 = 0;
-uint8_t mode3 = 0;
-uint8_t mode4 = 0;
+uint8_t Manual_mode = 0; // Manual
+uint8_t Teleop_mode = 0; // Teleop
+uint8_t Auto_mode = 0; // Auto
+uint8_t Joystick_mode = 0; // Joystick
 uint8_t forward = 0;
 uint8_t backward = 0;
 uint8_t l_switch = 0;
@@ -96,6 +111,9 @@ uint8_t cmd_mode4 = 0;
 uint8_t cmd_forward = 0;
 uint8_t cmd_backward = 0;
 
+
+MODE mode = MANUAL;
+DIRECTION manual_direction = FORWARD;
 float accelerator = 0.0;
 GPIO_PinState emer = 0;
 
@@ -131,6 +149,10 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time);
 uint16_t calculate_average(uint16_t *buffer, uint16_t length);
 void xlr8_publish(uint16_t xlr8);
 void emergency_publish(GPIO_PinState emer_state);
+void accel_direction_publish(int8_t dir);
+void interfaces_status();
+void mode_cycle();
+void mode_light_indicator();
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -224,6 +246,10 @@ void StartDefaultTask(void *argument)
 	const rosidl_message_type_support_t * bool_type_support =
 	  ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool);
 
+	const rosidl_message_type_support_t * int8_type_support =
+	  ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int8);
+
+
 
 	allocator = rcl_get_default_allocator();
 
@@ -246,6 +272,7 @@ void StartDefaultTask(void *argument)
 	// create publisher
 	rclc_publisher_init_best_effort(&xrl8_publisher, &node, uint16_type_support, "accl_publisher");
 	rclc_publisher_init_best_effort(&emer_publisher, &node, bool_type_support, "carver_emergency");
+	rclc_publisher_init_default(&direction_publisher, &node, int8_type_support, "accel_direction");
 	// create subscriber
 
 	// create service server
@@ -279,29 +306,37 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 			sync_counter = 0;
 		}
 
-		accelerator = calculate_average(adc_buffer, BUFFER_SIZE);
-		xlr8_publish(accelerator);
-		emer = HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin);
+		interfaces_status();
 		emergency_publish(emer);
 
-		mode1 = HAL_GPIO_ReadPin(Mode1_GPIO_Port, Mode1_Pin);
-		mode2 = HAL_GPIO_ReadPin(Mode2_GPIO_Port, Mode2_Pin);
-		mode3 = HAL_GPIO_ReadPin(Mode3_GPIO_Port, Mode3_Pin);
-		mode4 = HAL_GPIO_ReadPin(Mode4_GPIO_Port, Mode4_Pin);
-		forward = HAL_GPIO_ReadPin(Forward_GPIO_Port, Forward_Pin);
-		backward = HAL_GPIO_ReadPin(Backward_GPIO_Port, Backward_Pin);
-		l_switch = HAL_GPIO_ReadPin(L_Switch_GPIO_Port, L_Switch_Pin);
-		r_switch = HAL_GPIO_ReadPin(R_Switch_GPIO_Port, R_Switch_Pin);
-		l_break = HAL_GPIO_ReadPin(L_Break_GPIO_Port, L_Break_Pin);
-		r_break = HAL_GPIO_ReadPin(R_Break_GPIO_Port, R_Break_Pin);
+		mode_cycle();
+		mode_light_indicator();
 
 
-		HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, cmd_mode1);
-		HAL_GPIO_WritePin(Lamp_Mode2_GPIO_Port, Lamp_Mode2_Pin, cmd_mode2);
-		HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, cmd_mode3);
-		HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
-		HAL_GPIO_WritePin(Lamp_Forward_GPIO_Port, Lamp_Forward_Pin, cmd_forward);
-		HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, cmd_backward);
+		if(mode == MANUAL){
+			accelerator = calculate_average(adc_buffer, BUFFER_SIZE);
+			xlr8_publish(accelerator);
+
+			if(manual_direction == FORWARD){
+				cmd_forward = SET;
+				cmd_backward = RESET;
+				accel_direction_publish(1);
+
+			}
+
+			else if(manual_direction == BACKWARD){
+				cmd_forward = RESET;
+				cmd_backward = SET;
+				accel_direction_publish(-1);
+			}
+
+		}
+
+
+
+
+
+
 
 		HAL_IWDG_Refresh(&hiwdg);
 	}
@@ -322,6 +357,12 @@ void emergency_publish(GPIO_PinState emer_state)
 	if (ret != RCL_RET_OK) printf("Error publishing (line %d)\n", __LINE__);
 }
 
+void accel_direction_publish(int8_t dir)
+{
+	dir_msg.data = dir;
+	RCSOFTCHECK(rcl_publish(&direction_publisher, &dir_msg, NULL));
+}
+
 uint16_t calculate_average(uint16_t *buffer, uint16_t length) {
     uint32_t sum = 0;
     for (uint16_t i = 0; i < length; i++) {
@@ -329,5 +370,98 @@ uint16_t calculate_average(uint16_t *buffer, uint16_t length) {
     }
     return (uint16_t)(sum / length);
 }
+
+void interfaces_status(){
+
+	emer = HAL_GPIO_ReadPin(Emergency_GPIO_Port, Emergency_Pin);
+
+	Manual_mode = HAL_GPIO_ReadPin(Manual_GPIO_Port, Manual_Pin);
+	Teleop_mode = HAL_GPIO_ReadPin(Teleop_GPIO_Port, Teleop_Pin);
+	Auto_mode = HAL_GPIO_ReadPin(Auto_GPIO_Port, Auto_Pin);
+	Joystick_mode = HAL_GPIO_ReadPin(Joystick_GPIO_Port, Joystick_Pin);
+	forward = HAL_GPIO_ReadPin(Forward_GPIO_Port, Forward_Pin);
+	backward = HAL_GPIO_ReadPin(Backward_GPIO_Port, Backward_Pin);
+	l_switch = HAL_GPIO_ReadPin(L_Switch_GPIO_Port, L_Switch_Pin);
+	r_switch = HAL_GPIO_ReadPin(R_Switch_GPIO_Port, R_Switch_Pin);
+	l_break = HAL_GPIO_ReadPin(L_Break_GPIO_Port, L_Break_Pin);
+	r_break = HAL_GPIO_ReadPin(R_Break_GPIO_Port, R_Break_Pin);
+
+
+	HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, cmd_mode1);
+	HAL_GPIO_WritePin(Lamp_Mode2_GPIO_Port, Lamp_Mode2_Pin, cmd_mode2);
+	HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, cmd_mode3);
+	HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
+
+}
+
+void mode_cycle(){
+	if(Manual_mode == 1){
+		mode = MANUAL;
+	}
+	else if(Teleop_mode == 1){
+		mode = TELEOP;
+	}
+	else if(Auto_mode == 1){
+		mode = AUTO;
+	}
+	else if(Joystick_mode == 1){
+		mode = JOYSTICK;
+	}
+
+
+	if(forward == 1){
+		manual_direction = FORWARD;
+	}
+	else if(backward == 1){
+		manual_direction = BACKWARD;
+	}
+}
+
+void mode_light_indicator(){
+
+	if(mode == MANUAL){
+		cmd_mode1 = SET;
+		cmd_mode2 = RESET;
+		cmd_mode3 = RESET;
+		cmd_mode4 = RESET;
+	}
+	else if(mode == TELEOP){
+		cmd_mode2 = SET;
+		cmd_mode1 = RESET;
+		cmd_mode3 = RESET;
+		cmd_mode4 = RESET;
+	}
+	else if(mode == AUTO){
+		cmd_mode3 = SET;
+		cmd_mode1 = RESET;
+		cmd_mode2 = RESET;
+		cmd_mode4 = RESET;
+	}
+	else if(mode == JOYSTICK){
+		cmd_mode4 = SET;
+		cmd_mode1 = RESET;
+		cmd_mode2 = RESET;
+		cmd_mode3 = RESET;
+	}
+
+	if(mode != MANUAL){
+		cmd_forward = 0;
+		cmd_backward = 0;
+		manual_direction = FORWARD;
+		accel_direction_publish(0);
+
+	}
+
+	HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, cmd_mode1);
+	HAL_GPIO_WritePin(Lamp_Mode2_GPIO_Port, Lamp_Mode2_Pin, cmd_mode2);
+	HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, cmd_mode3);
+	HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
+	HAL_GPIO_WritePin(Lamp_Forward_GPIO_Port, Lamp_Forward_Pin, cmd_forward);
+	HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, cmd_backward);
+
+
+}
+
+
 /* USER CODE END Application */
 

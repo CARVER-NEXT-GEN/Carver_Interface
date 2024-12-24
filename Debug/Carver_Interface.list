@@ -1,5 +1,5 @@
 
-Carver-Interface.elf:     file format elf32-littlearm
+Carver_Interface.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  0002f387  00000000  00000000  0004bf65  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0002709e  00000000  00000000  0007b2ec  2**0
+ 17 .debug_line   00026f53  00000000  00000000  0007b2ec  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00129b87  00000000  00000000  000a238a  2**0
+ 18 .debug_str    00129b87  00000000  00000000  000a223f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000076  00000000  00000000  001cbf11  2**0
+ 19 .comment      00000076  00000000  00000000  001cbdc6  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00009220  00000000  00000000  001cbf88  2**2
+ 20 .debug_frame  00009220  00000000  00000000  001cbe3c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 0000004c  00000000  00000000  001d51a8  2**0
+ 21 .debug_line_str 0000004c  00000000  00000000  001d505c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1169,8 +1169,6 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
  8000b1a:	f000 f9bd 	bl	8000e98 <mode_light_indicator>
 
 
-
-
 		if(mode == MANUAL){
  8000b1e:	4b21      	ldr	r3, [pc, #132]	@ (8000ba4 <timer_callback+0xcc>)
  8000b20:	781b      	ldrb	r3, [r3, #0]
@@ -1279,7 +1277,7 @@ void xlr8_publish(uint16_t xlr8)
  8000bdc:	68fb      	ldr	r3, [r7, #12]
  8000bde:	2b00      	cmp	r3, #0
  8000be0:	d004      	beq.n	8000bec <xlr8_publish+0x2c>
- 8000be2:	f44f 71b0 	mov.w	r1, #352	@ 0x160
+ 8000be2:	f44f 71af 	mov.w	r1, #350	@ 0x15e
  8000be6:	4805      	ldr	r0, [pc, #20]	@ (8000bfc <xlr8_publish+0x3c>)
  8000be8:	f017 f850 	bl	8017c8c <iprintf>
 }
@@ -1319,7 +1317,7 @@ void emergency_publish(GPIO_PinState emer_state)
  8000c26:	68fb      	ldr	r3, [r7, #12]
  8000c28:	2b00      	cmp	r3, #0
  8000c2a:	d004      	beq.n	8000c36 <emergency_publish+0x36>
- 8000c2c:	f240 1167 	movw	r1, #359	@ 0x167
+ 8000c2c:	f240 1165 	movw	r1, #357	@ 0x165
  8000c30:	4805      	ldr	r0, [pc, #20]	@ (8000c48 <emergency_publish+0x48>)
  8000c32:	f017 f82b 	bl	8017c8c <iprintf>
 }
@@ -3091,7 +3089,7 @@ void MX_GPIO_Init(void)
  80016d6:	4845      	ldr	r0, [pc, #276]	@ (80017ec <MX_GPIO_Init+0x1b8>)
  80016d8:	f003 fa26 	bl	8004b28 <HAL_GPIO_WritePin>
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
  80016dc:	f44f 5300 	mov.w	r3, #8192	@ 0x2000
  80016e0:	617b      	str	r3, [r7, #20]
@@ -3107,7 +3105,7 @@ void MX_GPIO_Init(void)
  80016f2:	483f      	ldr	r0, [pc, #252]	@ (80017f0 <MX_GPIO_Init+0x1bc>)
  80016f4:	f003 f87e 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pins : PAPin PAPin */
+  /*Configure GPIO pins : L_Switch_Pin R_Switch_Pin */
   GPIO_InitStruct.Pin = L_Switch_Pin|R_Switch_Pin;
  80016f8:	2312      	movs	r3, #18
  80016fa:	617b      	str	r3, [r7, #20]
@@ -3123,7 +3121,7 @@ void MX_GPIO_Init(void)
  800170a:	f04f 4090 	mov.w	r0, #1207959552	@ 0x48000000
  800170e:	f003 f871 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pins : PAPin PAPin PAPin PAPin */
+  /*Configure GPIO pins : Backward_Pin Forward_Pin Auto_Pin Manual_Pin */
   GPIO_InitStruct.Pin = Backward_Pin|Forward_Pin|Auto_Pin|Manual_Pin;
  8001712:	f44f 7338 	mov.w	r3, #736	@ 0x2e0
  8001716:	617b      	str	r3, [r7, #20]
@@ -3139,7 +3137,7 @@ void MX_GPIO_Init(void)
  8001726:	f04f 4090 	mov.w	r0, #1207959552	@ 0x48000000
  800172a:	f003 f863 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : Emergency_Pin */
   GPIO_InitStruct.Pin = Emergency_Pin;
  800172e:	2320      	movs	r3, #32
  8001730:	617b      	str	r3, [r7, #20]
@@ -3155,7 +3153,7 @@ void MX_GPIO_Init(void)
  8001740:	482b      	ldr	r0, [pc, #172]	@ (80017f0 <MX_GPIO_Init+0x1bc>)
  8001742:	f003 f857 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pins : PBPin PBPin PBPin PBPin */
+  /*Configure GPIO pins : Lamp_Forward_Pin Lamp_Mode2_Pin Lamp_Mode3_Pin Lamp_Mode4_Pin */
   GPIO_InitStruct.Pin = Lamp_Forward_Pin|Lamp_Mode2_Pin|Lamp_Mode3_Pin|Lamp_Mode4_Pin;
  8001746:	f44f 6387 	mov.w	r3, #1080	@ 0x438
  800174a:	617b      	str	r3, [r7, #20]
@@ -3174,7 +3172,7 @@ void MX_GPIO_Init(void)
  800175e:	4823      	ldr	r0, [pc, #140]	@ (80017ec <MX_GPIO_Init+0x1b8>)
  8001760:	f003 f848 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pins : PCPin PCPin */
+  /*Configure GPIO pins : L_Break_Pin R_Break_Pin */
   GPIO_InitStruct.Pin = L_Break_Pin|R_Break_Pin;
  8001764:	f44f 73a0 	mov.w	r3, #320	@ 0x140
  8001768:	617b      	str	r3, [r7, #20]
@@ -3190,7 +3188,7 @@ void MX_GPIO_Init(void)
  8001778:	481d      	ldr	r0, [pc, #116]	@ (80017f0 <MX_GPIO_Init+0x1bc>)
  800177a:	f003 f83b 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : Teleop_Pin */
   GPIO_InitStruct.Pin = Teleop_Pin;
  800177e:	2380      	movs	r3, #128	@ 0x80
  8001780:	617b      	str	r3, [r7, #20]
@@ -3206,7 +3204,7 @@ void MX_GPIO_Init(void)
  8001790:	4817      	ldr	r0, [pc, #92]	@ (80017f0 <MX_GPIO_Init+0x1bc>)
  8001792:	f003 f82f 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pins : PAPin PAPin */
+  /*Configure GPIO pins : Lamp_Backward_Pin Lamp_Mode1_Pin */
   GPIO_InitStruct.Pin = Lamp_Backward_Pin|Lamp_Mode1_Pin;
  8001796:	f44f 63a0 	mov.w	r3, #1280	@ 0x500
  800179a:	617b      	str	r3, [r7, #20]
@@ -3225,7 +3223,7 @@ void MX_GPIO_Init(void)
  80017ae:	f04f 4090 	mov.w	r0, #1207959552	@ 0x48000000
  80017b2:	f003 f81f 	bl	80047f4 <HAL_GPIO_Init>
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : Joystick_Pin */
   GPIO_InitStruct.Pin = Joystick_Pin;
  80017b6:	2340      	movs	r3, #64	@ 0x40
  80017b8:	617b      	str	r3, [r7, #20]

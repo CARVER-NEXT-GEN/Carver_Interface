@@ -84,6 +84,10 @@ void Error_Handler(void);
 #define Emergency_GPIO_Port GPIOC
 #define Lamp_Forward_Pin GPIO_PIN_10
 #define Lamp_Forward_GPIO_Port GPIOB
+#define Signal_B_Pin GPIO_PIN_11
+#define Signal_B_GPIO_Port GPIOB
+#define Signal_L_Pin GPIO_PIN_12
+#define Signal_L_GPIO_Port GPIOB
 #define L_Break_Pin GPIO_PIN_6
 #define L_Break_GPIO_Port GPIOC
 #define Teleop_Pin GPIO_PIN_7
@@ -96,6 +100,10 @@ void Error_Handler(void);
 #define Manual_GPIO_Port GPIOA
 #define Lamp_Mode1_Pin GPIO_PIN_10
 #define Lamp_Mode1_GPIO_Port GPIOA
+#define Signal_R_Pin GPIO_PIN_11
+#define Signal_R_GPIO_Port GPIOA
+#define Signal_F_Pin GPIO_PIN_12
+#define Signal_F_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14

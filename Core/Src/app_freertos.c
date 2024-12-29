@@ -104,12 +104,17 @@ uint8_t r_switch = 0;
 uint8_t l_break = 0;
 uint8_t r_break = 0;
 
+
 uint8_t cmd_mode1 = 0;
 uint8_t cmd_mode2 = 0;
 uint8_t cmd_mode3 = 0;
 uint8_t cmd_mode4 = 0;
 uint8_t cmd_forward = 0;
 uint8_t cmd_backward = 0;
+uint8_t cmd_front_light = 0;
+uint8_t cmd_brake_light = 0;
+uint8_t cmd_left_signal_light = 0;
+uint8_t cmd_right_signal_light = 0;
 
 
 MODE mode = MANUAL;
@@ -153,6 +158,10 @@ void accel_direction_publish(int8_t dir);
 void interfaces_status();
 void mode_cycle();
 void mode_light_indicator();
+
+void left_turn(uint16_t _t);
+void right_turn(uint16_t _t);
+void harzard(uint16_t _t);
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -316,20 +325,47 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 		if(mode == MANUAL){
 			accelerator = calculate_average(adc_buffer, BUFFER_SIZE);
 			xlr8_publish(accelerator);
-
+			cmd_front_light = SET;
 			if(manual_direction == FORWARD){
 				cmd_forward = SET;
 				cmd_backward = RESET;
-				accel_direction_publish(1);
 
+				if(l_switch == RESET){
+					left_turn(100);
+				}
+
+				if(r_switch == RESET){
+					right_turn(100);
+				}
+
+				if(l_switch == SET && r_switch == SET){
+					cmd_left_signal_light = RESET;
+					cmd_right_signal_light = RESET;
+				}
+
+				accel_direction_publish(1);
 			}
 
 			else if(manual_direction == BACKWARD){
 				cmd_forward = RESET;
 				cmd_backward = SET;
+
+				harzard(200);
+
 				accel_direction_publish(-1);
 			}
 
+			if(l_break == RESET){
+				cmd_brake_light = SET;
+			}
+			else{
+				cmd_brake_light = RESET;
+			}
+
+		}
+		else
+		{
+			cmd_front_light = RESET;
 		}
 
 		HAL_IWDG_Refresh(&hiwdg);
@@ -386,6 +422,10 @@ void interfaces_status(){
 	HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, cmd_mode3);
 	HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
 
+	HAL_GPIO_WritePin(Signal_F_GPIO_Port, Signal_F_Pin, cmd_front_light);
+	HAL_GPIO_WritePin(Signal_B_GPIO_Port, Signal_B_Pin, cmd_brake_light);
+	HAL_GPIO_WritePin(Signal_L_GPIO_Port, Signal_L_Pin, cmd_left_signal_light);
+	HAL_GPIO_WritePin(Signal_R_GPIO_Port, Signal_R_Pin, cmd_right_signal_light);
 }
 
 void mode_cycle(){
@@ -443,7 +483,6 @@ void mode_light_indicator(){
 		cmd_backward = 0;
 		manual_direction = FORWARD;
 		accel_direction_publish(0);
-
 	}
 
 	HAL_GPIO_WritePin(Lamp_Mode1_GPIO_Port, Lamp_Mode1_Pin, cmd_mode1);
@@ -454,8 +493,37 @@ void mode_light_indicator(){
 	HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, cmd_backward);
 
 
+	HAL_GPIO_WritePin(Signal_F_GPIO_Port, Signal_F_Pin, cmd_front_light);
+	HAL_GPIO_WritePin(Signal_B_GPIO_Port, Signal_B_Pin, cmd_brake_light);
+	HAL_GPIO_WritePin(Signal_L_GPIO_Port, Signal_L_Pin, cmd_left_signal_light);
+	HAL_GPIO_WritePin(Signal_R_GPIO_Port, Signal_R_Pin, cmd_right_signal_light);
+
 }
 
+void left_turn(uint16_t _t){
+	if (uwTick % (_t*2) < _t) {
+		cmd_left_signal_light = SET;
+	} else {
+		cmd_left_signal_light = RESET;
+	}
+}
 
+void right_turn(uint16_t _t){
+	if (uwTick % (_t*2) < _t) {
+		cmd_right_signal_light = SET;
+	} else {
+		cmd_right_signal_light = RESET;
+	}
+}
+
+void harzard(uint16_t _t){
+	if (uwTick % (_t*2) < _t) {
+	    cmd_left_signal_light = SET;
+	    cmd_right_signal_light = SET;
+	} else {
+	    cmd_left_signal_light = RESET;
+	    cmd_right_signal_light = RESET;
+	}
+}
 /* USER CODE END Application */
 

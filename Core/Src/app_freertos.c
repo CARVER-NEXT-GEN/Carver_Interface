@@ -332,12 +332,6 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 
 		}
 
-
-
-
-
-
-
 		HAL_IWDG_Refresh(&hiwdg);
 	}
 

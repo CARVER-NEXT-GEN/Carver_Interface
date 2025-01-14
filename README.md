@@ -116,10 +116,13 @@ The Carver Interface operates through a combination of hardware and software sys
 ---
 
 ## Getting Started
-- Check your port connection first
+- Upload code to the STM32G4 board. 
+- Check your port connection first (Assume that it's /dev/ttyACM0)
 ```bash
    ls /dev/tty*
 ```
-
-
+- Run micro_ros_agent
+```bash
+   ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0 -b 2000000
+```
 ---

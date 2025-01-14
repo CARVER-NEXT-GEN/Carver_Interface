@@ -105,16 +105,6 @@ The Carver Interface incorporates an intelligent and dynamic lighting control sy
 
 ---
 
-## State Monitoring and Diagnostics
-
-The Carver Interface monitors key system states in real-time, providing critical information for safe and efficient operation:
-- **Emergency Status**: Detects and alerts users to emergency conditions.
-- **Brake Activity**: Tracks when the brake is engaged.
-- **Accelerator Engagement**: Displays throttle usage in real-time.
-- **Battery Status**: (Optional) Monitors remaining power for extended usability.
-
----
-
 ## How the Interface Works
 
 The Carver Interface operates through a combination of hardware and software systems:

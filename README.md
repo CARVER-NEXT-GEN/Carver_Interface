@@ -116,7 +116,10 @@ The Carver Interface operates through a combination of hardware and software sys
 ---
 
 ## Getting Started
-
+- Check your port connection first
+```bash
+   ls /dev/tty*
+```
 
 
 ---

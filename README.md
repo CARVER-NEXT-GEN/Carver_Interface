@@ -115,15 +115,6 @@ The Carver Interface operates through a combination of hardware and software sys
 
 ---
 
-## Future Enhancements
-
-- Integration of voice commands for hands-free control.
-- Enhanced UI/UX for the web interface and joystick operation.
-- Improved map-based navigation with real-time traffic and obstacle data.
-- Advanced diagnostic tools for preemptive maintenance alerts.
-
----
-
 ## Getting Started
 
 

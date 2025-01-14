@@ -111,7 +111,7 @@ The Carver Interface operates through a combination of hardware and software sys
 - **Hardware Integration**: Sensors and actuators are connected to the central control unit for seamless data flow.
 - **Web Interface**: Allows remote control and monitoring via a browser.
 - **Joystick Connectivity**: Provides a wireless connection for dynamic control.
-- **Autonomous Navigation**: Combines mapping, GPS, and obstacle avoidance for efficient auto-navigation.
+- **Autonomous Navigation**: Combines mapping, LiDar, and obstacle avoidance for efficient auto-navigation.
 
 ---
 

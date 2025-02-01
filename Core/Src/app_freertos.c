@@ -48,6 +48,8 @@
 #include <std_msgs/msg/u_int16.h>
 #include <std_msgs/msg/int8.h>
 #include <std_msgs/msg/bool.h>
+
+#include <geometry_msgs/msg/twist.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,7 +93,17 @@ std_msgs__msg__Bool emer_msg;
 rcl_publisher_t direction_publisher;
 std_msgs__msg__Int8 dir_msg;
 
+rcl_subscription_t mode_subscriber;
+std_msgs__msg__Int8 mode_msg;
+
+rcl_subscription_t twist_subscriber;
+geometry_msgs__msg__Twist twist_msg;
+
+
 uint8_t sync_counter = 0;
+
+uint8_t mode_sub_msg = 0;
+float linear_x = 0.0, angular_z = 0.0;
 
 uint8_t Manual_mode = 0; // Manual
 uint8_t Teleop_mode = 0; // Teleop
@@ -149,6 +161,8 @@ void microros_deallocate(void * pointer, void * state);
 void * microros_reallocate(void * pointer, size_t size, void * state);
 void * microros_zero_allocate(size_t number_of_elements, size_t size_of_element, void * state);
 
+void mode_subscription_callback(const void * msgin);
+void twist_subscription_callback(const void * msgin);
 
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time);
 uint16_t calculate_average(uint16_t *buffer, uint16_t length);
@@ -282,7 +296,10 @@ void StartDefaultTask(void *argument)
 	rclc_publisher_init_best_effort(&xrl8_publisher, &node, uint16_type_support, "accl_publisher");
 	rclc_publisher_init_best_effort(&emer_publisher, &node, bool_type_support, "carver_emergency");
 	rclc_publisher_init_default(&direction_publisher, &node, int8_type_support, "accel_direction");
+
 	// create subscriber
+	rclc_subscription_init_default(&mode_subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, int8),"interface_mode");
+	rclc_subscription_init_default(&twist_subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),"twist_command");
 
 	// create service server
 
@@ -292,6 +309,8 @@ void StartDefaultTask(void *argument)
 	rclc_executor_init(&executor, &support.context, executor_num, &allocator);
 
 	rclc_executor_add_timer(&executor, &XLR8_timer);
+	rclc_executor_add_subscription(&executor, &mode_subscriber, &mode_msg, &mode_subscription_callback, ON_NEW_DATA);
+	rclc_executor_add_subscription(&executor, &twist_subscriber, &twist_msg, &twist_subscription_callback, ON_NEW_DATA);
 
 	rclc_executor_spin(&executor);
 	rmw_uros_sync_session(timeout_ms);
@@ -305,6 +324,19 @@ void StartDefaultTask(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+void mode_subscription_callback(const void * msgin){
+	const std_msgs__msg__Int8 * mode_msg = (const std_msgs__msg__Int8 *)msgin;
+
+	mode_sub_msg = mode_msg->data;
+}
+
+void twist_subscription_callback(const void * msgin){
+	const geometry_msgs__msg__Twist * twist_msg = (const geometry_msgs__msg__Twist *)msgin;
+
+	linear_x = twist_msg->linear.x;
+	angular_z = twist_msg->angular.z;
+}
+
 void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 {
 	if (timer != NULL) {
@@ -361,6 +393,9 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 			else{
 				cmd_brake_light = RESET;
 			}
+
+		}
+		else if(mode == TELEOP){
 
 		}
 		else
@@ -428,27 +463,34 @@ void interfaces_status(){
 	HAL_GPIO_WritePin(Signal_R_GPIO_Port, Signal_R_Pin, cmd_right_signal_light);
 }
 
-void mode_cycle(){
-	if(Manual_mode == 1){
-		mode = MANUAL;
-	}
-	else if(Teleop_mode == 1){
-		mode = TELEOP;
-	}
-	else if(Auto_mode == 1){
-		mode = AUTO;
-	}
-	else if(Joystick_mode == 1){
-		mode = JOYSTICK;
-	}
+void mode_cycle() {
+    if (mode_sub_msg == 0) {
+        mode = MANUAL;
+    } else if (mode_sub_msg == 1) {
+        mode = TELEOP;
+    } else if (mode_sub_msg == 2) {
+        mode = AUTO;
+    } else if (mode_sub_msg == 3) {
+        mode = JOYSTICK;
+    }
 
+    else {
+        if (Manual_mode == 1) {
+            mode = MANUAL;
+        } else if (Teleop_mode == 1) {
+            mode = TELEOP;
+        } else if (Auto_mode == 1) {
+            mode = AUTO;
+        } else if (Joystick_mode == 1) {
+            mode = JOYSTICK;
+        }
+    }
 
-	if(forward == 1){
-		manual_direction = FORWARD;
-	}
-	else if(backward == 1){
-		manual_direction = BACKWARD;
-	}
+    if (forward == 1) {
+        manual_direction = FORWARD;
+    } else if (backward == 1) {
+        manual_direction = BACKWARD;
+    }
 }
 
 void mode_light_indicator(){

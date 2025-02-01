@@ -102,7 +102,7 @@ geometry_msgs__msg__Twist twist_msg;
 
 uint8_t sync_counter = 0;
 
-uint8_t mode_sub_msg = 0;
+uint8_t mode_sub_msg = 9;
 float linear_x = 0.0, angular_z = 0.0;
 
 uint8_t Manual_mode = 0; // Manual
@@ -261,7 +261,7 @@ void StartDefaultTask(void *argument)
 
 	const unsigned int timer_period = RCL_MS_TO_NS(8);
 	const int timeout_ms = 1000;
-	int executor_num = 1;
+	int executor_num = 3;
 
 	const rosidl_message_type_support_t * uint16_type_support =
 	  ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, UInt16);
@@ -298,7 +298,7 @@ void StartDefaultTask(void *argument)
 	rclc_publisher_init_default(&direction_publisher, &node, int8_type_support, "accel_direction");
 
 	// create subscriber
-	rclc_subscription_init_default(&mode_subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, int8),"interface_mode");
+	rclc_subscription_init_default(&mode_subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int8),"interface_mode");
 	rclc_subscription_init_default(&twist_subscriber, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(geometry_msgs, msg, Twist),"twist_command");
 
 	// create service server
@@ -396,7 +396,41 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 
 		}
 		else if(mode == TELEOP){
+			cmd_front_light = SET;
+			if(linear_x >=  0.0){
+				cmd_forward = SET;
+				cmd_backward = RESET;
 
+				if(angular_z < -1.0){
+					left_turn(100);
+				}
+
+				else if(angular_z >= 1.0){
+					right_turn(100);
+				}
+
+				else {
+					cmd_left_signal_light = RESET;
+					cmd_right_signal_light = RESET;
+				}
+				accel_direction_publish(1);
+			}
+
+			else if(linear_x < 0.0){
+				cmd_forward = RESET;
+				cmd_backward = SET;
+
+				harzard(200);
+
+				accel_direction_publish(-1);
+			}
+
+			if(linear_x == 0.0 || l_break == RESET){
+				cmd_brake_light = SET;
+			}
+			else{
+				cmd_brake_light = RESET;
+			}
 		}
 		else
 		{
@@ -520,7 +554,7 @@ void mode_light_indicator(){
 		cmd_mode3 = RESET;
 	}
 
-	if(mode != MANUAL){
+	if(mode != MANUAL && mode != TELEOP){
 		cmd_forward = 0;
 		cmd_backward = 0;
 		manual_direction = FORWARD;

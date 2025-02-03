@@ -51,10 +51,11 @@ void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Lamp_Forward_Pin|Lamp_Mode3_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Signal_Level2_Pin|Signal_Level1_Pin|Signal_B_Pin|Signal_L_Pin
+                          |Signal_Dimmed_Pin|Signal_Tail_Pin|Lamp_Mode2_Pin|Lamp_Mode4_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Signal_B_Pin|Signal_L_Pin|Lamp_Mode2_Pin|Lamp_Mode4_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, Lamp_Forward_Pin|Lamp_Mode3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, GPIO_PIN_RESET);
@@ -86,9 +87,11 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(Emergency_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Lamp_Forward_Pin Signal_B_Pin Signal_L_Pin Lamp_Mode2_Pin
+  /*Configure GPIO pins : Signal_Level2_Pin Signal_Level1_Pin Lamp_Forward_Pin Signal_B_Pin
+                           Signal_L_Pin Signal_Dimmed_Pin Signal_Tail_Pin Lamp_Mode2_Pin
                            Lamp_Mode3_Pin Lamp_Mode4_Pin */
-  GPIO_InitStruct.Pin = Lamp_Forward_Pin|Signal_B_Pin|Signal_L_Pin|Lamp_Mode2_Pin
+  GPIO_InitStruct.Pin = Signal_Level2_Pin|Signal_Level1_Pin|Lamp_Forward_Pin|Signal_B_Pin
+                          |Signal_L_Pin|Signal_Dimmed_Pin|Signal_Tail_Pin|Lamp_Mode2_Pin
                           |Lamp_Mode3_Pin|Lamp_Mode4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;

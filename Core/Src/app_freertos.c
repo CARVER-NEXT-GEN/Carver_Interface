@@ -121,6 +121,11 @@ uint8_t cmd_mode1 = 0;
 uint8_t cmd_mode2 = 0;
 uint8_t cmd_mode3 = 0;
 uint8_t cmd_mode4 = 0;
+uint8_t cmd_mode1_tower = 0;
+uint8_t cmd_mode2_tower = 0;
+uint8_t cmd_mode3_tower = 0;
+uint8_t cmd_mode4_tower = 0;
+
 uint8_t cmd_forward = 0;
 uint8_t cmd_backward = 0;
 uint8_t cmd_front_light = 0;
@@ -534,24 +539,45 @@ void mode_light_indicator(){
 		cmd_mode2 = RESET;
 		cmd_mode3 = RESET;
 		cmd_mode4 = RESET;
+
+		cmd_mode1_tower = SET;
+		cmd_mode2_tower = RESET;
+		cmd_mode3_tower = RESET;
+		cmd_mode4_tower = RESET;
+
 	}
 	else if(mode == TELEOP){
 		cmd_mode2 = SET;
 		cmd_mode1 = RESET;
 		cmd_mode3 = RESET;
 		cmd_mode4 = RESET;
+
+		cmd_mode1_tower = SET;
+		cmd_mode2_tower = RESET;
+		cmd_mode3_tower = RESET;
+		cmd_mode4_tower = RESET;
 	}
 	else if(mode == AUTO){
 		cmd_mode3 = SET;
 		cmd_mode1 = RESET;
 		cmd_mode2 = RESET;
 		cmd_mode4 = RESET;
+
+		cmd_mode3_tower = SET;
+		cmd_mode1_tower = RESET;
+		cmd_mode2_tower = RESET;
+		cmd_mode4_tower = RESET;
 	}
 	else if(mode == JOYSTICK){
 		cmd_mode4 = SET;
 		cmd_mode1 = RESET;
 		cmd_mode2 = RESET;
 		cmd_mode3 = RESET;
+
+		cmd_mode4_tower = SET;
+		cmd_mode1_tower = RESET;
+		cmd_mode2_tower = RESET;
+		cmd_mode3_tower = RESET;
 	}
 
 	if(mode != MANUAL && mode != TELEOP){
@@ -565,6 +591,11 @@ void mode_light_indicator(){
 	HAL_GPIO_WritePin(Lamp_Mode2_GPIO_Port, Lamp_Mode2_Pin, cmd_mode2);
 	HAL_GPIO_WritePin(Lamp_Mode3_GPIO_Port, Lamp_Mode3_Pin, cmd_mode3);
 	HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
+
+	HAL_GPIO_WritePin(Signal_Dimmed_GPIO_Port, Signal_Dimmed_Pin, cmd_mode1_tower); //Green
+	HAL_GPIO_WritePin(Signal_Level1_GPIO_Port, Signal_Level1_Pin, cmd_mode3_tower); //Orange
+	HAL_GPIO_WritePin(Signal_Level2_GPIO_Port, Signal_Level2_Pin, cmd_mode4_tower); //Red
+
 	HAL_GPIO_WritePin(Lamp_Forward_GPIO_Port, Lamp_Forward_Pin, cmd_forward);
 	HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, cmd_backward);
 

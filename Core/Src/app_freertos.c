@@ -181,6 +181,9 @@ void mode_light_indicator();
 void left_turn(uint16_t _t);
 void right_turn(uint16_t _t);
 void harzard(uint16_t _t);
+void tower_red(uint16_t _t);
+void tower_yellow(uint16_t _t);
+void tower_green(uint16_t _t);
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
@@ -552,7 +555,7 @@ void mode_light_indicator(){
 		cmd_mode3 = RESET;
 		cmd_mode4 = RESET;
 
-		cmd_mode1_tower = SET;
+		tower_green(400);
 		cmd_mode2_tower = RESET;
 		cmd_mode3_tower = RESET;
 		cmd_mode4_tower = RESET;
@@ -563,7 +566,7 @@ void mode_light_indicator(){
 		cmd_mode2 = RESET;
 		cmd_mode4 = RESET;
 
-		cmd_mode3_tower = SET;
+		tower_red(200);
 		cmd_mode1_tower = RESET;
 		cmd_mode2_tower = RESET;
 		cmd_mode4_tower = RESET;
@@ -574,7 +577,7 @@ void mode_light_indicator(){
 		cmd_mode2 = RESET;
 		cmd_mode3 = RESET;
 
-		cmd_mode4_tower = SET;
+		tower_yellow(400);
 		cmd_mode1_tower = RESET;
 		cmd_mode2_tower = RESET;
 		cmd_mode3_tower = RESET;
@@ -593,8 +596,8 @@ void mode_light_indicator(){
 	HAL_GPIO_WritePin(Lamp_Mode4_GPIO_Port, Lamp_Mode4_Pin, cmd_mode4);
 
 	HAL_GPIO_WritePin(Signal_Dimmed_GPIO_Port, Signal_Dimmed_Pin, cmd_mode1_tower); //Green
-	HAL_GPIO_WritePin(Signal_Level1_GPIO_Port, Signal_Level1_Pin, cmd_mode3_tower); //Orange
-	HAL_GPIO_WritePin(Signal_Level2_GPIO_Port, Signal_Level2_Pin, cmd_mode4_tower); //Red
+	HAL_GPIO_WritePin(Signal_Level1_GPIO_Port, Signal_Level1_Pin, cmd_mode4_tower); //Yellow
+	HAL_GPIO_WritePin(Signal_Level2_GPIO_Port, Signal_Level2_Pin, cmd_mode3_tower); //Red
 
 	HAL_GPIO_WritePin(Lamp_Forward_GPIO_Port, Lamp_Forward_Pin, cmd_forward);
 	HAL_GPIO_WritePin(Lamp_Backward_GPIO_Port, Lamp_Backward_Pin, cmd_backward);
@@ -631,6 +634,32 @@ void harzard(uint16_t _t){
 	    cmd_left_signal_light = RESET;
 	    cmd_right_signal_light = RESET;
 	}
+}
+
+void tower_red(uint16_t _t){
+	if (uwTick % (_t*2) < _t) {
+		cmd_mode3_tower = SET;
+	} else {
+		cmd_mode3_tower = RESET;
+	}
+}
+
+void tower_yellow(uint16_t _t) {
+    uint16_t period = _t * 2;
+    if (uwTick % period < _t / 4) {
+        cmd_mode4_tower = SET;  // Set pin for 25% of _t
+    } else {
+        cmd_mode4_tower = RESET;
+    }
+}
+
+void tower_green(uint16_t _t) {
+    uint16_t period = _t * 2;
+    if (uwTick % period < _t / 4) {
+        cmd_mode1_tower = SET;  // Set pin for 25% of _t
+    } else {
+        cmd_mode1_tower = RESET;
+    }
 }
 /* USER CODE END Application */
 
